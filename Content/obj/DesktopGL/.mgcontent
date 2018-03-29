@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>D:/gamedev/schiebespiel/schiebespiel/Content/Text.spritefont</File>
+    <File>D:/gamedev/schiebespiel/schiebespiel/Content/boden.png</File>
+    <File>D:/gamedev/schiebespiel/schiebespiel/Content/box.png</File>
+    <File>D:/gamedev/schiebespiel/schiebespiel/Content/spieler.png</File>
+    <File>D:/gamedev/schiebespiel/schiebespiel/Content/tisch.png</File>
+    <File>D:/gamedev/schiebespiel/schiebespiel/Content/wand.png</File>
+  </SourceFiles>
+</SourceFileCollection>
