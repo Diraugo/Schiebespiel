@@ -15,6 +15,8 @@ namespace schiebespiel
         private int x;
         private int y;
 
+        private Vector2 vPosition;
+
         private bool zeichneBoden;
 
         Texture2D Textur;
@@ -26,6 +28,7 @@ namespace schiebespiel
             this.y = pY;
             Textur = pTextur;
             this.zeichneBoden = pZeichne;
+            this.vPosition = new Vector2(pX * 80, pY * 80);
         }
 
         public int getX()
@@ -49,6 +52,14 @@ namespace schiebespiel
             this.x = pX;
             this.y = pY;
         }
+        public void setVPosition(Vector2 pV)
+        {
+            this.vPosition = pV;
+        }
+        public Vector2 getVPosition()
+        {
+            return this.vPosition;
+        }
     }
 
 
@@ -64,12 +75,19 @@ namespace schiebespiel
         Texture2D TexturSpieler;
         Texture2D TexturBoden;
 
+        Spielobjekte Spieler;
+        Spielobjekte Box;
         List<Spielobjekte> lSpielobjekte=new List<Spielobjekte>();
 
         SpriteFont Anzeige;
 
         String Spielfeld;
         string[] SpielArray;
+
+        bool bMovement;
+        bool bMoveBox;
+
+        Keys kMove;
         
         public Game1()
         {
@@ -86,13 +104,15 @@ namespace schiebespiel
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Spielfeld = "wwwwwww\n" +
-                "w**p**w\n" +
-                "w**t**w\n" +
-                "w**x**w\n" +
-                "wwwwwww";
+            Spielfeld = "wwwwwwww\n" +
+                "w**p***w\n" +
+                "w**tx**w\n" +
+                "w******w\n" +
+                "w******w\n" +
+                "wwwwwwww";
             SpielArray=Spielfeld.Split('\n');
-            
+            bMovement = false;
+            bMoveBox = false;
             
 
             base.Initialize();
@@ -129,10 +149,12 @@ namespace schiebespiel
                             tmpObjekt = new Spielobjekte(j, i, TexturBoden,false);
                             break;
                         case 'p':
-                            tmpObjekt = new Spielobjekte(j,i, TexturSpieler,true);
+                            Spieler = new Spielobjekte(j,i, TexturSpieler,true);
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
                             break;
                         case 'x':
-                            tmpObjekt = new Spielobjekte(j, i, TexturBox,true);
+                            Box = new Spielobjekte(j, i, TexturBox,true);
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
                             break;
                         case 't':
                             tmpObjekt = new Spielobjekte(j, i, TexturTisch, true);
@@ -167,6 +189,176 @@ namespace schiebespiel
                 Exit();
 
             // TODO: Add your update logic here
+            if (!bMovement)
+            {
+                var kstate = Keyboard.GetState();
+                if (kstate.IsKeyDown(Keys.Up))
+                {
+                    if (this.CanMove(Keys.Up))
+                    {
+                        if (Spieler.getX() == Box.getX() && Spieler.getY() -1 == Box.getY())
+                        {
+                            if(CanBoxMove(Keys.Up))
+                            {
+                                Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
+                                kMove = Keys.Up;
+                                bMovement = true;
+                            }
+                        }
+                        else
+                        {
+                            Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
+                            kMove = Keys.Up;
+                            bMovement = true;
+                        }
+                    }
+                }
+                if (kstate.IsKeyDown(Keys.Down))
+                {
+                    if (this.CanMove(Keys.Down))
+                    {
+                        if (Spieler.getX() == Box.getX() && Spieler.getY() + 1 == Box.getY())
+                        {
+                            if(CanBoxMove(Keys.Down))
+                            {
+                                Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
+                                kMove = Keys.Down;
+                                bMovement = true;
+                            }
+                        }
+                        else
+                        {
+                            Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
+                            kMove = Keys.Down;
+                            bMovement = true;
+                        }
+                    }
+                }
+                if (kstate.IsKeyDown(Keys.Left))
+                {
+                    if (this.CanMove(Keys.Left))
+                    {
+                        if (Spieler.getX() - 1 == Box.getX() && Spieler.getY() == Box.getY())
+                        {
+                            if(CanBoxMove(Keys.Left))
+                            {
+                                Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
+                                kMove = Keys.Left;
+                                bMovement = true;
+                            }
+                        }
+                        else
+                        {
+                            Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
+                            kMove = Keys.Left;
+                            bMovement = true;
+                        }
+                    }
+                }
+                if (kstate.IsKeyDown(Keys.Right))
+                {
+                    if (this.CanMove(Keys.Right))
+                    {
+                        if (Spieler.getX() + 1 == Box.getX() && Spieler.getY() == Box.getY())
+                        {
+                            if(CanBoxMove(Keys.Right))
+                            {
+                                Spieler.setPosition(Spieler.getX() + 1, Spieler.getY());
+                                kMove = Keys.Right;
+                                bMovement = true;
+                            }
+                        }
+                        else
+                        {
+                            Spieler.setPosition(Spieler.getX() + 1, Spieler.getY());
+                            kMove = Keys.Right;
+                            bMovement = true;
+                        }
+                    }
+                }
+                if(Spieler.getX()==Box.getX()&&Spieler.getY()==Box.getY()&&bMovement)
+                {
+                    bMoveBox = true;
+                    switch (kMove)
+                    {
+                        case Keys.Up:
+                            Box.setPosition(Box.getX(), Box.getY() - 1);
+                            break;
+                        case Keys.Down:
+                            Box.setPosition(Box.getX(), Box.getY() + 1);
+                            break;
+                        case Keys.Right:
+                            Box.setPosition(Box.getX()+1, Box.getY());
+                            break;
+                        case Keys.Left:
+                            Box.setPosition(Box.getX()-1, Box.getY());
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Vector2 tmpVektor = Spieler.getVPosition();
+                Vector2 tmpBox = Box.getVPosition();
+                switch(kMove)
+                {
+                    case Keys.Up:
+                        tmpVektor.Y = tmpVektor.Y - 2;
+                        if (bMoveBox)
+                        {
+                            tmpBox.Y = tmpBox.Y - 2;
+                        }
+                        if (tmpVektor.Y%80==0||tmpVektor.Y==0)
+                        {
+                            bMovement = false;
+                            bMoveBox = false;
+                        }
+                        break;
+                    case Keys.Down:
+                        tmpVektor.Y = tmpVektor.Y +2;
+                        if (bMoveBox)
+                        {
+                            tmpBox.Y = tmpBox.Y + 2;
+                        }
+                        if (tmpVektor.Y % 80 == 0 || tmpVektor.Y == 0)
+                        {
+                            bMovement = false;
+                            bMoveBox = false;
+                        }
+                        break;
+                    case Keys.Right:
+                        tmpVektor.X = tmpVektor.X + 2;
+                        if (bMoveBox)
+                        {
+                            tmpBox.X = tmpBox.X + 2;
+                        }
+                        if (tmpVektor.X % 80 == 0 || tmpVektor.X == 0)
+                        {
+                            bMovement = false;
+                            bMoveBox = false;
+                        }
+                        break;
+                    case Keys.Left:
+                        tmpVektor.X = tmpVektor.X - 2;
+                        if (bMoveBox)
+                        {
+                            tmpBox.X = tmpBox.X - 2;
+                        }
+                        if (tmpVektor.X % 80 == 0 || tmpVektor.X == 0)
+                        {
+                            bMovement = false;
+                            bMoveBox = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                Spieler.setVPosition(tmpVektor);
+                Box.setVPosition(tmpBox);
+
+            }
 
             base.Update(gameTime);
         }
@@ -189,9 +381,62 @@ namespace schiebespiel
                 }
                 spriteBatch.Draw(lSpielobjekte[i].getTextur(),new Rectangle(lSpielobjekte[i].getX()*80,lSpielobjekte[i].getY()*80,80,80),Color.White);
             }
+            spriteBatch.Draw(Spieler.getTextur(), new Rectangle((int)Spieler.getVPosition().X, (int)Spieler.getVPosition().Y, 80, 80), Color.White);
+            spriteBatch.Draw(Box.getTextur(), new Rectangle((int)Box.getVPosition().X, (int)Box.getVPosition().Y, 80, 80), Color.White);
             //spriteBatch.DrawString(Anzeige, Spielfeld, new Vector2(50, 50), Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        protected bool CanMove(Keys pKey)
+        {
+            bool bMove=false;
+            for(int i=0;i<lSpielobjekte.Count;i++)
+            {
+                if(lSpielobjekte[i].getX()==Spieler.getX()-1&&lSpielobjekte[i].getTextur().Name=="boden"&&pKey==Keys.Left&& lSpielobjekte[i].getY() == Spieler.getY())
+                {
+                    bMove=true;
+                }
+                if (lSpielobjekte[i].getX() == Spieler.getX() + 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Right&& lSpielobjekte[i].getY() == Spieler.getY())
+                {
+                    bMove = true;
+                }
+                if (lSpielobjekte[i].getY() == Spieler.getY() - 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Up&& lSpielobjekte[i].getX() == Spieler.getX())
+                {
+                    bMove = true;
+                }
+                if (lSpielobjekte[i].getY() == Spieler.getY() + 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Down&& lSpielobjekte[i].getX() == Spieler.getX())
+                {
+                    bMove = true;
+                }
+            }
+            return bMove;
+        }
+
+        protected bool CanBoxMove(Keys pKey)
+        {
+            bool bMove = false;
+            for (int i = 0; i < lSpielobjekte.Count; i++)
+            {
+                if (lSpielobjekte[i].getX() == Box.getX() - 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Left && lSpielobjekte[i].getY() == Box.getY())
+                {
+                    bMove = true;
+                }
+                if (lSpielobjekte[i].getX() == Box.getX() + 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Right && lSpielobjekte[i].getY() == Box.getY())
+                {
+                    bMove = true;
+                }
+                if (lSpielobjekte[i].getY() == Box.getY() - 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Up && lSpielobjekte[i].getX() == Box.getX())
+                {
+                    bMove = true;
+                }
+                if (lSpielobjekte[i].getY() == Box.getY() + 1 && lSpielobjekte[i].getTextur().Name == "boden" && pKey == Keys.Down && lSpielobjekte[i].getX() == Box.getX())
+                {
+                    bMove = true;
+                }
+            }
+            return bMove;
+        }
+
     }
 }
