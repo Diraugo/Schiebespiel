@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>D:/gamedev/schiebespiel/schiebespiel/Content/boden.png</SourceFile>
-  <SourceTime>2018-04-05T20:19:31.4624702+02:00</SourceTime>
-  <DestFile>D:/gamedev/schiebespiel/schiebespiel/Content/bin/DesktopGL/boden.xnb</DestFile>
-  <DestTime>2018-04-05T20:19:36.0324351+02:00</DestTime>
+  <SourceFile>D:/gamedev/schiebespiel/schiebespiel/Content/ziel.png</SourceFile>
+  <SourceTime>2018-04-05T17:08:45.7422566+02:00</SourceTime>
+  <DestFile>D:/gamedev/schiebespiel/schiebespiel/Content/bin/DesktopGL/ziel.xnb</DestFile>
+  <DestTime>2018-04-05T17:11:41.1439793+02:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2017-03-01T16:05:36+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

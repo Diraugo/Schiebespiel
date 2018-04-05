@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace schiebespiel
 {
@@ -28,7 +29,7 @@ namespace schiebespiel
             this.y = pY;
             Textur = pTextur;
             this.zeichneBoden = pZeichne;
-            this.vPosition = new Vector2(pX * 80, pY * 80);
+            this.vPosition = new Vector2(pX * 60, pY * 60);
         }
 
         public int getX()
@@ -74,9 +75,11 @@ namespace schiebespiel
         Texture2D TexturBox;
         Texture2D TexturSpieler;
         Texture2D TexturBoden;
+        Texture2D TexturZiel;
 
         Spielobjekte Spieler;
         Spielobjekte Box;
+        Spielobjekte Ziel;
         List<Spielobjekte> lSpielobjekte=new List<Spielobjekte>();
 
         SpriteFont Anzeige;
@@ -86,6 +89,7 @@ namespace schiebespiel
 
         bool bMovement;
         bool bMoveBox;
+        bool bEnd;
 
         Keys kMove;
         
@@ -104,16 +108,19 @@ namespace schiebespiel
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            Spielfeld = "wwwwwwww\n" +
-                "w**p***w\n" +
-                "w**tx**w\n" +
-                "w******w\n" +
-                "w******w\n" +
-                "wwwwwwww";
-            SpielArray=Spielfeld.Split('\n');
+
+            Spielfeld = "wwwwwwwwww~";
+            StreamReader sr = File.OpenText("test.txt");
+            string s = "";
+            while((s=sr.ReadLine())!=null)
+            {
+                Spielfeld = Spielfeld + "w" + s + "w~";
+            }
+            Spielfeld+= "wwwwwwwwww";
+            SpielArray =Spielfeld.Split('~');
             bMovement = false;
             bMoveBox = false;
-            
+            bEnd = false;
 
             base.Initialize();
         }
@@ -134,6 +141,7 @@ namespace schiebespiel
             TexturWand = Content.Load<Texture2D>("wand");
             TexturSpieler = Content.Load<Texture2D>("spieler");
             TexturTisch = Content.Load<Texture2D>("tisch");
+            TexturZiel = Content.Load<Texture2D>("ziel");
 
             Spielobjekte tmpObjekt;
             for (int i = 0; i < SpielArray.Length; i++)
@@ -156,6 +164,10 @@ namespace schiebespiel
                             Box = new Spielobjekte(j, i, TexturBox,true);
                             tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
                             break;
+                        case 'z':
+                            Ziel = new Spielobjekte(j, i, TexturZiel, true);
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
+                            break;
                         case 't':
                             tmpObjekt = new Spielobjekte(j, i, TexturTisch, true);
                             break;
@@ -163,7 +175,6 @@ namespace schiebespiel
                             tmpObjekt = new Spielobjekte(j, i, TexturBoden,false);
                             break;
                     }
-
                     lSpielobjekte.Add(tmpObjekt);
                 }
             }
@@ -189,177 +200,182 @@ namespace schiebespiel
                 Exit();
 
             // TODO: Add your update logic here
-            if (!bMovement)
+            if (!bEnd)
             {
-                var kstate = Keyboard.GetState();
-                if (kstate.IsKeyDown(Keys.Up))
+                if (!bMovement)
                 {
-                    if (this.CanMove(Keys.Up))
+                    var kstate = Keyboard.GetState();
+                    if (kstate.IsKeyDown(Keys.Up))
                     {
-                        if (Spieler.getX() == Box.getX() && Spieler.getY() -1 == Box.getY())
+                        if (this.CanMove(Keys.Up))
                         {
-                            if(CanBoxMove(Keys.Up))
+                            if (Spieler.getX() == Box.getX() && Spieler.getY() - 1 == Box.getY())
+                            {
+                                if (CanBoxMove(Keys.Up))
+                                {
+                                    Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
+                                    kMove = Keys.Up;
+                                    bMovement = true;
+                                }
+                            }
+                            else
                             {
                                 Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
                                 kMove = Keys.Up;
                                 bMovement = true;
                             }
                         }
-                        else
-                        {
-                            Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
-                            kMove = Keys.Up;
-                            bMovement = true;
-                        }
                     }
-                }
-                if (kstate.IsKeyDown(Keys.Down))
-                {
-                    if (this.CanMove(Keys.Down))
+                    if (kstate.IsKeyDown(Keys.Down))
                     {
-                        if (Spieler.getX() == Box.getX() && Spieler.getY() + 1 == Box.getY())
+                        if (this.CanMove(Keys.Down))
                         {
-                            if(CanBoxMove(Keys.Down))
+                            if (Spieler.getX() == Box.getX() && Spieler.getY() + 1 == Box.getY())
+                            {
+                                if (CanBoxMove(Keys.Down))
+                                {
+                                    Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
+                                    kMove = Keys.Down;
+                                    bMovement = true;
+                                }
+                            }
+                            else
                             {
                                 Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
                                 kMove = Keys.Down;
                                 bMovement = true;
                             }
                         }
-                        else
-                        {
-                            Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
-                            kMove = Keys.Down;
-                            bMovement = true;
-                        }
                     }
-                }
-                if (kstate.IsKeyDown(Keys.Left))
-                {
-                    if (this.CanMove(Keys.Left))
+                    if (kstate.IsKeyDown(Keys.Left))
                     {
-                        if (Spieler.getX() - 1 == Box.getX() && Spieler.getY() == Box.getY())
+                        if (this.CanMove(Keys.Left))
                         {
-                            if(CanBoxMove(Keys.Left))
+                            if (Spieler.getX() - 1 == Box.getX() && Spieler.getY() == Box.getY())
+                            {
+                                if (CanBoxMove(Keys.Left))
+                                {
+                                    Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
+                                    kMove = Keys.Left;
+                                    bMovement = true;
+                                }
+                            }
+                            else
                             {
                                 Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
                                 kMove = Keys.Left;
                                 bMovement = true;
                             }
                         }
-                        else
-                        {
-                            Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
-                            kMove = Keys.Left;
-                            bMovement = true;
-                        }
                     }
-                }
-                if (kstate.IsKeyDown(Keys.Right))
-                {
-                    if (this.CanMove(Keys.Right))
+                    if (kstate.IsKeyDown(Keys.Right))
                     {
-                        if (Spieler.getX() + 1 == Box.getX() && Spieler.getY() == Box.getY())
+                        if (this.CanMove(Keys.Right))
                         {
-                            if(CanBoxMove(Keys.Right))
+                            if (Spieler.getX() + 1 == Box.getX() && Spieler.getY() == Box.getY())
+                            {
+                                if (CanBoxMove(Keys.Right))
+                                {
+                                    Spieler.setPosition(Spieler.getX() + 1, Spieler.getY());
+                                    kMove = Keys.Right;
+                                    bMovement = true;
+                                }
+                            }
+                            else
                             {
                                 Spieler.setPosition(Spieler.getX() + 1, Spieler.getY());
                                 kMove = Keys.Right;
                                 bMovement = true;
                             }
                         }
-                        else
+                    }
+                    if (Spieler.getX() == Box.getX() && Spieler.getY() == Box.getY() && bMovement)
+                    {
+                        bMoveBox = true;
+                        switch (kMove)
                         {
-                            Spieler.setPosition(Spieler.getX() + 1, Spieler.getY());
-                            kMove = Keys.Right;
-                            bMovement = true;
+                            case Keys.Up:
+                                Box.setPosition(Box.getX(), Box.getY() - 1);
+                                break;
+                            case Keys.Down:
+                                Box.setPosition(Box.getX(), Box.getY() + 1);
+                                break;
+                            case Keys.Right:
+                                Box.setPosition(Box.getX() + 1, Box.getY());
+                                break;
+                            case Keys.Left:
+                                Box.setPosition(Box.getX() - 1, Box.getY());
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
-                if(Spieler.getX()==Box.getX()&&Spieler.getY()==Box.getY()&&bMovement)
+                else
                 {
-                    bMoveBox = true;
+                    Vector2 tmpVektor = Spieler.getVPosition();
+                    Vector2 tmpBox = Box.getVPosition();
                     switch (kMove)
                     {
                         case Keys.Up:
-                            Box.setPosition(Box.getX(), Box.getY() - 1);
+                            tmpVektor.Y = tmpVektor.Y - 2;
+                            if (bMoveBox)
+                            {
+                                tmpBox.Y = tmpBox.Y - 2;
+                            }
+                            if (tmpVektor.Y % 60 == 0 || tmpVektor.Y == 0)
+                            {
+                                bMovement = false;
+                                bMoveBox = false;
+                            }
                             break;
                         case Keys.Down:
-                            Box.setPosition(Box.getX(), Box.getY() + 1);
+                            tmpVektor.Y = tmpVektor.Y + 2;
+                            if (bMoveBox)
+                            {
+                                tmpBox.Y = tmpBox.Y + 2;
+                            }
+                            if (tmpVektor.Y % 60 == 0 || tmpVektor.Y == 0)
+                            {
+                                bMovement = false;
+                                bMoveBox = false;
+                            }
                             break;
                         case Keys.Right:
-                            Box.setPosition(Box.getX()+1, Box.getY());
+                            tmpVektor.X = tmpVektor.X + 2;
+                            if (bMoveBox)
+                            {
+                                tmpBox.X = tmpBox.X + 2;
+                            }
+                            if (tmpVektor.X % 60 == 0 || tmpVektor.X == 0)
+                            {
+                                bMovement = false;
+                                bMoveBox = false;
+                            }
                             break;
                         case Keys.Left:
-                            Box.setPosition(Box.getX()-1, Box.getY());
+                            tmpVektor.X = tmpVektor.X - 2;
+                            if (bMoveBox)
+                            {
+                                tmpBox.X = tmpBox.X - 2;
+                            }
+                            if (tmpVektor.X % 60 == 0 || tmpVektor.X == 0)
+                            {
+                                bMovement = false;
+                                bMoveBox = false;
+                            }
                             break;
                         default:
                             break;
                     }
+                    Spieler.setVPosition(tmpVektor);
+                    Box.setVPosition(tmpBox);
                 }
             }
-            else
+            if(Box.getVPosition()==Ziel.getVPosition())
             {
-                Vector2 tmpVektor = Spieler.getVPosition();
-                Vector2 tmpBox = Box.getVPosition();
-                switch(kMove)
-                {
-                    case Keys.Up:
-                        tmpVektor.Y = tmpVektor.Y - 2;
-                        if (bMoveBox)
-                        {
-                            tmpBox.Y = tmpBox.Y - 2;
-                        }
-                        if (tmpVektor.Y%80==0||tmpVektor.Y==0)
-                        {
-                            bMovement = false;
-                            bMoveBox = false;
-                        }
-                        break;
-                    case Keys.Down:
-                        tmpVektor.Y = tmpVektor.Y +2;
-                        if (bMoveBox)
-                        {
-                            tmpBox.Y = tmpBox.Y + 2;
-                        }
-                        if (tmpVektor.Y % 80 == 0 || tmpVektor.Y == 0)
-                        {
-                            bMovement = false;
-                            bMoveBox = false;
-                        }
-                        break;
-                    case Keys.Right:
-                        tmpVektor.X = tmpVektor.X + 2;
-                        if (bMoveBox)
-                        {
-                            tmpBox.X = tmpBox.X + 2;
-                        }
-                        if (tmpVektor.X % 80 == 0 || tmpVektor.X == 0)
-                        {
-                            bMovement = false;
-                            bMoveBox = false;
-                        }
-                        break;
-                    case Keys.Left:
-                        tmpVektor.X = tmpVektor.X - 2;
-                        if (bMoveBox)
-                        {
-                            tmpBox.X = tmpBox.X - 2;
-                        }
-                        if (tmpVektor.X % 80 == 0 || tmpVektor.X == 0)
-                        {
-                            bMovement = false;
-                            bMoveBox = false;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                Spieler.setVPosition(tmpVektor);
-                Box.setVPosition(tmpBox);
-
+                bEnd = true;
             }
-
             base.Update(gameTime);
         }
 
@@ -377,13 +393,17 @@ namespace schiebespiel
             {
                 if(lSpielobjekte[i].getZeichneBoden())
                 {
-                    spriteBatch.Draw(TexturBoden, new Rectangle(lSpielobjekte[i].getX() * 80, lSpielobjekte[i].getY() * 80, 80, 80), Color.White);
+                    spriteBatch.Draw(TexturBoden, new Rectangle(lSpielobjekte[i].getX() * 60, lSpielobjekte[i].getY() * 60, 60, 60), Color.White);
                 }
-                spriteBatch.Draw(lSpielobjekte[i].getTextur(),new Rectangle(lSpielobjekte[i].getX()*80,lSpielobjekte[i].getY()*80,80,80),Color.White);
+                spriteBatch.Draw(lSpielobjekte[i].getTextur(),new Rectangle(lSpielobjekte[i].getX()*60,lSpielobjekte[i].getY()*60,60,60),Color.White);
             }
-            spriteBatch.Draw(Spieler.getTextur(), new Rectangle((int)Spieler.getVPosition().X, (int)Spieler.getVPosition().Y, 80, 80), Color.White);
-            spriteBatch.Draw(Box.getTextur(), new Rectangle((int)Box.getVPosition().X, (int)Box.getVPosition().Y, 80, 80), Color.White);
-            //spriteBatch.DrawString(Anzeige, Spielfeld, new Vector2(50, 50), Color.White);
+            spriteBatch.Draw(Ziel.getTextur(), new Rectangle(Ziel.getX() * 60, Ziel.getY() * 60, 60, 60), Color.White);
+            spriteBatch.Draw(Spieler.getTextur(), new Rectangle((int)Spieler.getVPosition().X, (int)Spieler.getVPosition().Y, 60, 60), Color.White);
+            spriteBatch.Draw(Box.getTextur(), new Rectangle((int)Box.getVPosition().X, (int)Box.getVPosition().Y, 60, 60), Color.White);
+            if (bEnd)
+            {
+                spriteBatch.DrawString(Anzeige, "Ziel erreicht", new Vector2(50, 50), Color.White);
+            }
             spriteBatch.End();
             base.Draw(gameTime);
         }
