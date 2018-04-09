@@ -205,71 +205,86 @@ namespace schiebespiel
                 if (!bMovement)
                 {
                     var kstate = Keyboard.GetState();
+                    Keys kButton = new Keys();
                     if (kstate.IsKeyDown(Keys.Up))
                     {
-                        if (this.CanMove(Keys.Up))
-                        {
-                            if (Spieler.getX() == Box.getX() && Spieler.getY() - 1 == Box.getY())
-                            {
-                                if (CanBoxMove(Keys.Up))
-                                {
-                                    Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
-                                    kMove = Keys.Up;
-                                    bMovement = true;
-                                }
-                            }
-                            else
-                            {
-                                Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
-                                kMove = Keys.Up;
-                                bMovement = true;
-                            }
-                        }
+                        kButton = Keys.Up;
                     }
                     if (kstate.IsKeyDown(Keys.Down))
                     {
-                        if (this.CanMove(Keys.Down))
-                        {
-                            if (Spieler.getX() == Box.getX() && Spieler.getY() + 1 == Box.getY())
+                        kButton = Keys.Down;
+                    }
+                    if (kstate.IsKeyDown(Keys.Left))
+                    {
+                        kButton = Keys.Left;
+                    }
+                    if (kstate.IsKeyDown(Keys.Right))
+                    {
+                        kButton = Keys.Right;
+                    }
+                    switch(kButton)
+                    {
+                        case Keys.Up:
+                            if (this.CanMove(Keys.Up))
+                                {
+                                    if (Spieler.getX() == Box.getX() && Spieler.getY() - 1 == Box.getY())
+                                    {
+                                        if (CanBoxMove(Keys.Up))
+                                        {
+                                            Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
+                                            kMove = Keys.Up;
+                                            bMovement = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Spieler.setPosition(Spieler.getX(), Spieler.getY() - 1);
+                                        kMove = Keys.Up;
+                                        bMovement = true;
+                                    }
+                                }
+                            break;
+                        case Keys.Down:
+                            if (this.CanMove(Keys.Down))
                             {
-                                if (CanBoxMove(Keys.Down))
+                                if (Spieler.getX() == Box.getX() && Spieler.getY() + 1 == Box.getY())
+                                {
+                                    if (CanBoxMove(Keys.Down))
+                                    {
+                                        Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
+                                        kMove = Keys.Down;
+                                        bMovement = true;
+                                    }
+                                }
+                                else
                                 {
                                     Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
                                     kMove = Keys.Down;
                                     bMovement = true;
                                 }
                             }
-                            else
+                            break;
+                        case Keys.Left:
+                            if (this.CanMove(Keys.Left))
                             {
-                                Spieler.setPosition(Spieler.getX(), Spieler.getY() + 1);
-                                kMove = Keys.Down;
-                                bMovement = true;
-                            }
-                        }
-                    }
-                    if (kstate.IsKeyDown(Keys.Left))
-                    {
-                        if (this.CanMove(Keys.Left))
-                        {
-                            if (Spieler.getX() - 1 == Box.getX() && Spieler.getY() == Box.getY())
-                            {
-                                if (CanBoxMove(Keys.Left))
+                                if (Spieler.getX() - 1 == Box.getX() && Spieler.getY() == Box.getY())
+                                {
+                                    if (CanBoxMove(Keys.Left))
+                                    {
+                                        Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
+                                        kMove = Keys.Left;
+                                        bMovement = true;
+                                    }
+                                }
+                                else
                                 {
                                     Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
                                     kMove = Keys.Left;
                                     bMovement = true;
                                 }
                             }
-                            else
-                            {
-                                Spieler.setPosition(Spieler.getX() - 1, Spieler.getY());
-                                kMove = Keys.Left;
-                                bMovement = true;
-                            }
-                        }
-                    }
-                    if (kstate.IsKeyDown(Keys.Right))
-                    {
+                            break;
+                        case Keys.Right:
                         if (this.CanMove(Keys.Right))
                         {
                             if (Spieler.getX() + 1 == Box.getX() && Spieler.getY() == Box.getY())
@@ -288,6 +303,9 @@ namespace schiebespiel
                                 bMovement = true;
                             }
                         }
+                            break;
+                        default:
+                            break;
                     }
                     if (Spieler.getX() == Box.getX() && Spieler.getY() == Box.getY() && bMovement)
                     {
