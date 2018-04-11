@@ -109,14 +109,14 @@ namespace schiebespiel
         {
             // TODO: Add your initialization logic here
 
-            Spielfeld = "wwwwwwwwww~";
+            Spielfeld = "";
             StreamReader sr = File.OpenText("test.txt");
             string s = "";
             while((s=sr.ReadLine())!=null)
             {
-                Spielfeld = Spielfeld + "w" + s + "w~";
+                Spielfeld = Spielfeld +  s + "~";
             }
-            Spielfeld+= "wwwwwwwwww";
+            
             SpielArray =Spielfeld.Split('~');
             bMovement = false;
             bMoveBox = false;
