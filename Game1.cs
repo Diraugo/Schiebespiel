@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -84,6 +85,8 @@ namespace schiebespiel
 
         SpriteFont Anzeige;
 
+        Song lied;
+
         String Spielfeld;
         string[] SpielArray;
 
@@ -92,6 +95,7 @@ namespace schiebespiel
         bool bEnd;
 
         Keys kMove;
+        
         
         public Game1()
         {
@@ -142,42 +146,12 @@ namespace schiebespiel
             TexturSpieler = Content.Load<Texture2D>("spieler");
             TexturTisch = Content.Load<Texture2D>("tisch");
             TexturZiel = Content.Load<Texture2D>("ziel");
-
-            Spielobjekte tmpObjekt;
-            for (int i = 0; i < SpielArray.Length; i++)
-            {
-                for (int j = 0; j < SpielArray[i].Length; j++)
-                {
-                    switch (SpielArray[i].ToCharArray()[j])
-                    {
-                        case 'w':
-                            tmpObjekt = new Spielobjekte(j, i, TexturWand,false);
-                            break;
-                        case '*':
-                            tmpObjekt = new Spielobjekte(j, i, TexturBoden,false);
-                            break;
-                        case 'p':
-                            Spieler = new Spielobjekte(j,i, TexturSpieler,true);
-                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
-                            break;
-                        case 'x':
-                            Box = new Spielobjekte(j, i, TexturBox,true);
-                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
-                            break;
-                        case 'z':
-                            Ziel = new Spielobjekte(j, i, TexturZiel, true);
-                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
-                            break;
-                        case 't':
-                            tmpObjekt = new Spielobjekte(j, i, TexturTisch, true);
-                            break;
-                        default:
-                            tmpObjekt = new Spielobjekte(j, i, TexturBoden,false);
-                            break;
-                    }
-                    lSpielobjekte.Add(tmpObjekt);
-                }
-            }
+            lied = Content.Load<Song>("testmusik");
+            MediaPlayer.Play(lied);
+            MediaPlayer.Volume = 0.3f;
+            MediaPlayer.IsRepeating = false;
+            LadeSpielobjekte();
+            
         }
 
         /// <summary>
@@ -221,6 +195,10 @@ namespace schiebespiel
                     if (kstate.IsKeyDown(Keys.Right))
                     {
                         kButton = Keys.Right;
+                    }
+                    if(kstate.IsKeyDown(Keys.R))
+                    {
+                        LadeSpielobjekte();
                     }
                     switch(kButton)
                     {
@@ -393,6 +371,7 @@ namespace schiebespiel
             if(Box.getVPosition()==Ziel.getVPosition())
             {
                 bEnd = true;
+                MediaPlayer.Stop();
             }
             base.Update(gameTime);
         }
@@ -474,6 +453,45 @@ namespace schiebespiel
                 }
             }
             return bMove;
+        }
+
+        protected void LadeSpielobjekte()
+        {
+            Spielobjekte tmpObjekt;
+            for (int i = 0; i < SpielArray.Length; i++)
+            {
+                for (int j = 0; j < SpielArray[i].Length; j++)
+                {
+                    switch (SpielArray[i].ToCharArray()[j])
+                    {
+                        case 'w':
+                            tmpObjekt = new Spielobjekte(j, i, TexturWand, false);
+                            break;
+                        case '*':
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
+                            break;
+                        case 'p':
+                            Spieler = new Spielobjekte(j, i, TexturSpieler, true);
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
+                            break;
+                        case 'x':
+                            Box = new Spielobjekte(j, i, TexturBox, true);
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
+                            break;
+                        case 'z':
+                            Ziel = new Spielobjekte(j, i, TexturZiel, true);
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
+                            break;
+                        case 't':
+                            tmpObjekt = new Spielobjekte(j, i, TexturTisch, true);
+                            break;
+                        default:
+                            tmpObjekt = new Spielobjekte(j, i, TexturBoden, false);
+                            break;
+                    }
+                    lSpielobjekte.Add(tmpObjekt);
+                }
+            }
         }
 
     }

@@ -24,3 +24,5 @@ D:\gamedev\schiebespiel\schiebespiel\bin\DesktopGL\AnyCPU\Debug\Content\spieler.
 D:\gamedev\schiebespiel\schiebespiel\bin\DesktopGL\AnyCPU\Debug\Content\tisch.xnb
 D:\gamedev\schiebespiel\schiebespiel\bin\DesktopGL\AnyCPU\Debug\Content\wand.xnb
 D:\gamedev\schiebespiel\schiebespiel\bin\DesktopGL\AnyCPU\Debug\Content\ziel.xnb
+D:\gamedev\schiebespiel\schiebespiel\bin\DesktopGL\AnyCPU\Debug\Content\testmusik.ogg
+D:\gamedev\schiebespiel\schiebespiel\bin\DesktopGL\AnyCPU\Debug\Content\testmusik.xnb
